@@ -1,7 +1,7 @@
 const express = require('express');
 const { sendEmail } = require('../config/email.config');
 const { authenticateApiKey } = require('../middleware/auth.middleware');
-const { validateEmailRequest } = require('../middleware/validation.middleware');
+const { validateEmailRequest, validate } = require('../middleware/validation.middleware');
 const { logger } = require('../utils/logger');
 
 const router = express.Router();
@@ -10,7 +10,7 @@ const router = express.Router();
 router.use(authenticateApiKey);
 
 // Send email endpoint
-router.post('/send', validateEmailRequest, async (req, res) => {
+router.post('/send', validateEmailRequest, validate, async (req, res) => {
   try {
     const { to, subject, html, text, attachments } = req.body;
     
@@ -55,7 +55,7 @@ router.post('/send', validateEmailRequest, async (req, res) => {
 });
 
 // Bulk email endpoint
-router.post('/send-bulk', validateEmailRequest, async (req, res) => {
+router.post('/send-bulk', validateEmailRequest, validate, async (req, res) => {
   try {
     const { recipients, subject, html, text, attachments } = req.body;
     
