@@ -10,22 +10,24 @@ const logger = winston.createLogger({
   ),
   defaultMeta: { service: 'email-service' },
   transports: [
-    // Console transport for development
+    // Console transport (works in Vercel)
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
         winston.format.simple()
       )
-    }),
-    
-    // File transport with daily rotation
-    new DailyRotateFile({
-      filename: `${process.env.LOG_DIR || 'logs'}/email-service-%DATE%.log`,
-      datePattern: 'YYYY-MM-DD',
-      maxSize: '20m',
-      maxFiles: '14d'
     })
   ]
 });
+
+// Only add file transport in development
+if (process.env.NODE_ENV === 'development') {
+  logger.add(new DailyRotateFile({
+    filename: `${process.env.LOG_DIR || 'logs'}/email-service-%DATE%.log`,
+    datePattern: 'YYYY-MM-DD',
+    maxSize: '20m',
+    maxFiles: '14d'
+  }));
+}
 
 module.exports = { logger };
